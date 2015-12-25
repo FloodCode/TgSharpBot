@@ -7,11 +7,8 @@ namespace TgSharpBot.Serialization
     {
         protected override string ResolvePropertyName(string propertyName)
         {
-            return string.Concat(
-                propertyName.Select(
-                    (x, i) => i > 0 && char.IsUpper(x) ? "_" + char.ToLower(x).ToString() : x.ToString().ToLower()
-                    )
-                );
+            return System.Text.RegularExpressions.Regex.Replace(
+            propertyName, @"([A-Z])([A-Z][a-z])|([a-z0-9])([A-Z])", "$1$3_$2$4").ToLower();
         }
     }
 }

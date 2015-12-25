@@ -8,21 +8,22 @@ namespace TgSharpBot
 {
     public class TelegramBot
     {
-        private JsonSerializerSettings jsonSettings;
+        private JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+        {
+            ContractResolver = new TelegramResolver(),
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+            NullValueHandling = NullValueHandling.Include,
+        };
         public string Token { get; }
         public string ApiUrl { get; }
         public TelegramBot(string token)
         {
             Token = token;
             ApiUrl = "https://api.telegram.org/bot" + Token;
-            jsonSettings = new JsonSerializerSettings();
-            jsonSettings.ContractResolver = new TelegramResolver();
-            jsonSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
-            jsonSettings.NullValueHandling = NullValueHandling.Include;
         }
         private TelegramType Deserialize<TelegramType>(string jsonObject)
         {
-            Response<TelegramType> requestResponse = JsonConvert.DeserializeObject<Response<TelegramType>>(jsonObject);
+            Response<TelegramType> requestResponse = JsonConvert.DeserializeObject<Response<TelegramType>>(jsonObject, jsonSettings);
             return requestResponse.Result;
         }
         public User GetMe()
