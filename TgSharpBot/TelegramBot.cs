@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System;
 
 namespace TgSharpBot
 {
@@ -23,6 +24,11 @@ namespace TgSharpBot
         {
             Token = token;
             ApiUrl = "https://api.telegram.org/bot" + Token + "/";
+            User botInfo = GetMe();
+            if (botInfo == null)
+            {
+                throw new ArgumentNullException("botInfo", "Can't get basic information about the bot. Your token must be valid.");
+            }
         }
 
         private Response<TelegramType> Deserialize<TelegramType>(string jsonObject)
@@ -49,7 +55,7 @@ namespace TgSharpBot
             string jsonResponse = Request.Send(ApiUrl + "getMe");
             return jsonResponse == string.Empty ? null : Deserialize<User>(jsonResponse).Result;
         }
-
+        
         public List<Update> GetUpdates()
         {
             return GetUpdates(_lastUpdateId + 1);
@@ -88,16 +94,38 @@ namespace TgSharpBot
             return response.Result;
         }
 
+        /// <summary>
+        /// Sends text message to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="text">Text of the message to be sent</param>
+        /// <returns>Sent message</returns>
         public Message SendMessage(int chatId, string text)
         {
             return SendMessage(chatId, text, null, false, null);
         }
 
+        /// <summary>
+        /// Sends text message to chat 
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="text">Text of the message to be sent</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendMessage(int chatId, string text, int replyToMessageId)
         {
             return SendMessage(chatId, text, null, false, replyToMessageId);
         }
 
+        /// <summary>
+        /// Sends text message to chat 
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="text">Text of the message to be sent</param>
+        /// <param name="parseMode">Send "Markdown" for parse mode</param>
+        /// <param name="disableWebPagePreview">Disables link previews for links in this message</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendMessage(int chatId, string text, string parseMode = null,
             bool disableWebPagePreview = false, int? replyToMessageId = null)
         {
@@ -110,16 +138,38 @@ namespace TgSharpBot
             return ProcessMethod("sendMessage", parameters);
         }
 
+        /// <summary>
+        /// Sends text message to chat 
+        /// </summary>
+        /// <param name="username">Username of the target channel</param>
+        /// <param name="text">Text of the message to be sent</param>
+        /// <returns>Sent message</returns>
         public Message SendMessage(string username, string text)
         {
             return SendMessage(username, text, null, false, null);
         }
 
+        /// <summary>
+        /// Sends text message to chat
+        /// </summary>
+        /// <param name="username">Username of the target channel</param>
+        /// <param name="text">Text of the message to be sent</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendMessage(string username, string text, int replyToMessageId)
         {
             return SendMessage(username, text, null, false, replyToMessageId);
         }
 
+        /// <summary>
+        /// Sends text message to chat
+        /// </summary>
+        /// <param name="username">Username of the target channel</param>
+        /// <param name="text">Text of the message to be sent</param>
+        /// <param name="parseMode">Send "Markdown" for parse mode</param>
+        /// <param name="disableWebPagePreview">Disables link previews for links in this message</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendMessage(string username, string text, string parseMode = null,
             bool disableWebPagePreview = false, int? replyToMessageId = null)
         {
@@ -132,6 +182,13 @@ namespace TgSharpBot
             return ProcessMethod("sendMessage", parameters);
         }
 
+        /// <summary>
+        /// Forwards message of any kind
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="fromChatId">Unique identifier for the chat where the original message was sent</param>
+        /// <param name="messageId">Unique message identifier</param>
+        /// <returns>Sent message</returns>
         public Message ForwardMessage(int chatId, int fromChatId, int messageId)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -141,6 +198,14 @@ namespace TgSharpBot
             return ProcessMethod("forwardMessage", parameters);
         }
 
+        /// <summary>
+        /// Sends photo to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="fileId">Unique identifier of photo</param>
+        /// <param name="caption">Photo caption</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendPhoto(int chatId, string fileId, string caption = null, int? replyToMessageId = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -151,6 +216,14 @@ namespace TgSharpBot
             return ProcessMethod("sendPhoto", parameters);
         }
 
+        /// <summary>
+        /// Sends photo to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="photo">File stream of photo</param>
+        /// <param name="caption">Photo caption</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendPhoto(int chatId, FileStream photo, string caption = null, int? replyToMessageId = null)
         {
             byte[] photoData = new byte[photo.Length];
@@ -165,6 +238,14 @@ namespace TgSharpBot
             return ProcessMethod("sendPhoto", parameters);
         }
 
+        /// <summary>
+        /// Sends audio to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="fileId">Unique identifier of audio</param>
+        /// <param name="duration">Duration of the audio in seconds</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendAudio(int chatId, string fileId, int? duration = null, int? replyToMessageId = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -175,6 +256,14 @@ namespace TgSharpBot
             return ProcessMethod("sendAudio", parameters);
         }
 
+        /// <summary>
+        /// Sends audio to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="audio">File stream of audio</param>
+        /// <param name="duration">Duration of the audio in seconds</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendAudio(int chatId, FileStream audio, int? duration = null, int? replyToMessageId = null)
         {
             byte[] audioData = new byte[audio.Length];
@@ -189,6 +278,13 @@ namespace TgSharpBot
             return ProcessMethod("sendAudio", parameters);
         }
 
+        /// <summary>
+        /// Sends document to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="fileId">Unique identifier of document</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendDocument(int chatId, string fileId, int? replyToMessageId = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -198,6 +294,13 @@ namespace TgSharpBot
             return ProcessMethod("sendDocument", parameters);
         }
 
+        /// <summary>
+        /// Sends document to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="document">File stream of document</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendDocument(int chatId, FileStream document, int? replyToMessageId = null)
         {
             byte[] documentData = new byte[document.Length];
@@ -212,6 +315,13 @@ namespace TgSharpBot
             return ProcessMethod("sendDocument", parameters);
         }
 
+        /// <summary>
+        /// Sends sticker to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="fileId">Unique identifier of sticker</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendSticker(int chatId, string fileId, int? replyToMessageId = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -221,6 +331,13 @@ namespace TgSharpBot
             return ProcessMethod("sendSticker", parameters);
         }
 
+        /// <summary>
+        /// Sends sticker to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="sticker">File stream of sticker</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendSticker(int chatId, FileStream sticker, int? replyToMessageId = null)
         {
             byte[] stickerData = new byte[sticker.Length];
@@ -235,6 +352,14 @@ namespace TgSharpBot
             return ProcessMethod("sendSticker", parameters);
         }
 
+        /// <summary>
+        /// Sends video to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="fileId">Unique identifier of video</param>
+        /// <param name="duration">Duration of sent video in seconds</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendVideo(int chatId, string fileId, int? duration = null, int? replyToMessageId = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -245,6 +370,14 @@ namespace TgSharpBot
             return ProcessMethod("sendVideo", parameters);
         }
 
+        /// <summary>
+        /// Sends video to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="video">File stream of video</param>
+        /// <param name="duration">Duration of sent video in seconds</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendVideo(int chatId, FileStream video, int? duration = null, int? replyToMessageId = null)
         {
             byte[] videoData = new byte[video.Length];
@@ -260,6 +393,14 @@ namespace TgSharpBot
             return ProcessMethod("sendVideo", parameters);
         }
 
+        /// <summary>
+        /// Sends voice to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="fileId">Unique identifier of voice</param>
+        /// <param name="duration">Duration of sent audio in seconds</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendVoice(int chatId, int fileId, int? duration = null, int? replyToMessageId = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -270,6 +411,14 @@ namespace TgSharpBot
             return ProcessMethod("sendVoice", parameters);
         }
 
+        /// <summary>
+        /// Sends voice to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="voice">File stream of voice</param>
+        /// <param name="duration">Duration of sent audio in seconds</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendVoice(int chatId, FileStream voice, int? duration = null, int? replyToMessageId = null)
         {
             byte[] voiceData = new byte[voice.Length];
@@ -284,6 +433,14 @@ namespace TgSharpBot
             return ProcessMethod("sendVoice", parameters);
         }
 
+        /// <summary>
+        /// Sends location to chat
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="latitude">Latitude of location</param>
+        /// <param name="longitude">Longitude of location</param>
+        /// <param name="replyToMessageId">If the message is a reply, ID of the original message</param>
+        /// <returns>Sent message</returns>
         public Message SendLocation(int chatId, float latitude, float longitude, int? replyToMessageId = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -294,6 +451,12 @@ namespace TgSharpBot
             return ProcessMethod("sendLocation", parameters);
         }
 
+        /// <summary>
+        /// Sends chat action
+        /// </summary>
+        /// <param name="chatId">Unique identifier for the target chat</param>
+        /// <param name="chatAction">Type of action to broadcast</param>
+        /// <returns>Returns true if success</returns>
         public bool SendChatAction(int chatId, string chatAction)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -304,6 +467,13 @@ namespace TgSharpBot
             return response == null ? false : response.Ok;
         }
 
+        /// <summary>
+        /// Gets user profile photos
+        /// </summary>
+        /// <param name="userId">Unique identifier of the target user</param>
+        /// <param name="offset">Sequential number of the first photo to be returned</param>
+        /// <param name="limit">Limits the number of photos to be retrieved. Values between 1—100 are accepted</param>
+        /// <returns>User profile photos</returns>
         public UserProfilePhotos GetUserProfilePhotos(int userId, int? offset = null, int? limit = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
@@ -315,6 +485,11 @@ namespace TgSharpBot
             return response == null ? null : response.Ok ? response.Result : null;
         }
 
+        /// <summary>
+        /// Gets file info
+        /// </summary>
+        /// <param name="fileId">File identifier to get info about</param>
+        /// <returns>File info</returns>
         public TgSharpBot.Types.File GetFile(string fileId)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
