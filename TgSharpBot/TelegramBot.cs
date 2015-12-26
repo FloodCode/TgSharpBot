@@ -2,6 +2,7 @@
 using TgSharpBot.Serialization;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 
 namespace TgSharpBot
@@ -12,10 +13,12 @@ namespace TgSharpBot
         {
             ContractResolver = new TelegramResolver(),
             MissingMemberHandling = MissingMemberHandling.Ignore,
-            NullValueHandling = NullValueHandling.Include,
+            NullValueHandling = NullValueHandling.Include
         };
+        private int _lastUpdateId = 0;
         public string Token { get; }
         public string ApiUrl { get; }
+        public int LastUpdateId { get { return _lastUpdateId; } }
         public TelegramBot(string token)
         {
             Token = token;
@@ -45,6 +48,44 @@ namespace TgSharpBot
         {
             string jsonResponse = Request.Send(ApiUrl + "getMe");
             return jsonResponse == string.Empty ? null : Deserialize<User>(jsonResponse).Result;
+        }
+
+        public List<Update> GetUpdates()
+        {
+            return GetUpdates(_lastUpdateId + 1);
+        }
+
+        public List<Update> GetUpdates(int? offset = null, int? limit = null, int? timeout = null)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            if (offset != null) parameters.Add("offset", offset);
+            if (limit != null) parameters.Add("limit", limit);
+            if (timeout != null) parameters.Add("timeout", timeout);
+            string jsonResponse = Request.Send(ApiUrl + "getUpdates", parameters);
+            Response<List<Update>> response = Deserialize<List<Update>>(jsonResponse);
+            if (response != null)
+            {
+                if (response.Ok)
+                {
+                    if (response.Result.Count > 0)
+                    {
+                        _lastUpdateId = response.Result.Last().UpdateId;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+            return response.Result;
         }
 
         public Message SendMessage(int chatId, string text)
@@ -271,6 +312,15 @@ namespace TgSharpBot
             if (limit != null) parameters.Add("limit", limit);
             string jsonResponse = Request.Send(ApiUrl + "getUserProfilePhotos", parameters);
             Response<UserProfilePhotos> response = Deserialize<UserProfilePhotos>(jsonResponse);
+            return response == null ? null : response.Ok ? response.Result : null;
+        }
+
+        public TgSharpBot.Types.File GetFile(string fileId)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("file_id", fileId);
+            string jsonResponse = Request.Send(ApiUrl + "getFile", parameters);
+            Response<TgSharpBot.Types.File> response = Deserialize<TgSharpBot.Types.File>(jsonResponse);
             return response == null ? null : response.Ok ? response.Result : null;
         }
     }
