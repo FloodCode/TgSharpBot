@@ -7,7 +7,7 @@ namespace TgSharpBot.Types
 {
     public class Chat
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string Type { get; set; }
         public string Title { get; set; }
         public string FirstName { get; set; }
