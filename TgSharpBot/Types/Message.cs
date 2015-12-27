@@ -24,5 +24,9 @@ namespace TgSharpBot.Types
         public PhotoSize[] NewChatPhoto { get; set; }
         public bool DeleteChatPhoto { get; set; }
         public bool GroupChatCreated { get; set; }
+        public bool SupergroupChatCreated { get; set; }
+        public bool ChannelChatCreated { get; set; }
+        public int MigrateToChatId { get; set; }
+        public int MigrateFromChatId { get; set; }
     }
 }
