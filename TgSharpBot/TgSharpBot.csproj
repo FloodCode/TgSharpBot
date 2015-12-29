@@ -58,9 +58,12 @@
     <Compile Include="Types\Contact.cs" />
     <Compile Include="Types\Document.cs" />
     <Compile Include="Types\File.cs" />
+    <Compile Include="Types\ForceReply.cs" />
     <Compile Include="Types\Location.cs" />
     <Compile Include="Types\Message.cs" />
     <Compile Include="Types\PhotoSize.cs" />
+    <Compile Include="Types\ReplyKeyboardHide.cs" />
+    <Compile Include="Types\ReplyKeyboardMarkup.cs" />
     <Compile Include="Types\Response.cs" />
     <Compile Include="Types\Session.cs" />
     <Compile Include="Types\Sticker.cs" />
