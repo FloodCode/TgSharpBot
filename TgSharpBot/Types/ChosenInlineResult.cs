@@ -5,7 +5,7 @@ namespace TgSharpBot.Types
     /// <summary>
     /// This class represents a result of an inline query that was chosen by the user and sent to their chat partner
     /// </summary>
-    class ChosenInlineResult
+    public class ChosenInlineResult
     {
         /// <summary>
         /// The unique identifier for the result that was chosen

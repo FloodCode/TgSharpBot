@@ -1,5 +1,4 @@
 ﻿using TgSharpBot.Types;
-using TgSharpBot.Serialization;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,6 @@ namespace TgSharpBot
     {
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
         {
-            ContractResolver = new TelegramResolver(),
             MissingMemberHandling = MissingMemberHandling.Ignore,
             NullValueHandling = NullValueHandling.Include
         };

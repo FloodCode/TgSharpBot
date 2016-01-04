@@ -5,7 +5,7 @@ namespace TgSharpBot.Types
     /// <summary>
     /// Upon receiving a message with object of this class, Telegram clients will display a reply interface to the user
     /// </summary>
-    class ForceReply
+    public class ForceReply
     {
         /// <summary>
         /// Shows reply interface to the user, as if they manually selected the bot‘s message and tapped "Reply"
