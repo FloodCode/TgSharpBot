@@ -52,7 +52,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="Serialization\TelegramResolver.cs" />
-    <Compile Include="Types\AnswerInlineQuery.cs" />
     <Compile Include="Types\Audio.cs" />
     <Compile Include="Types\Chat.cs" />
     <Compile Include="Types\ChatAction.cs" />

@@ -311,6 +311,81 @@ namespace TgSharpBot
             return response == null ? false : response.Ok;
         }
 
+        private bool InnerAnswerInlineQuery(string inlineQueryId, List<InlineQueryResult> results, int? cacheTime = null, bool isPersonal = false, string nextOffset = null)
+        {
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("inline_query_id", inlineQueryId);
+
+            if (results.Count == 0)
+            {
+                throw new Exception("Must be at least 1 result");
+            }
+            else if (results.Count > 50)
+            {
+                throw new Exception("No more than 50 results per query are allowed");
+            }
+            else
+            {
+                string resultsJson = string.Empty;
+
+                switch (results.First().Type)
+                {
+                    case "article":
+                        List<InlineQueryResultArticle> articleResults = new List<InlineQueryResultArticle>();
+                        foreach (InlineQueryResult queryResult in results)
+                        {
+                            articleResults.Add(queryResult as InlineQueryResultArticle);
+                        }
+                        resultsJson = JsonConvert.SerializeObject(articleResults);
+                        break;
+                    case "photo":
+                        List<InlineQueryResultPhoto> photoResults = new List<InlineQueryResultPhoto>();
+                        foreach (InlineQueryResult queryResult in results)
+                        {
+                            photoResults.Add(queryResult as InlineQueryResultPhoto);
+                        }
+                        resultsJson = JsonConvert.SerializeObject(photoResults);
+                        break;
+                    case "gif":
+                        List<InlineQueryResultGif> gifResults = new List<InlineQueryResultGif>();
+                        foreach (InlineQueryResult queryResult in results)
+                        {
+                            gifResults.Add(queryResult as InlineQueryResultGif);
+                        }
+                        resultsJson = JsonConvert.SerializeObject(gifResults);
+                        break;
+                    case "mpeg4_gif":
+                        List<InlineQueryResultMpeg4Gif> mpeg4GifResults = new List<InlineQueryResultMpeg4Gif>();
+                        foreach (InlineQueryResult queryResult in results)
+                        {
+                            mpeg4GifResults.Add(queryResult as InlineQueryResultMpeg4Gif);
+                        }
+                        resultsJson = JsonConvert.SerializeObject(mpeg4GifResults);
+                        break;
+                    case "video":
+                        List<InlineQueryResultVideo> videoResults = new List<InlineQueryResultVideo>();
+                        foreach (InlineQueryResult queryResult in results)
+                        {
+                            videoResults.Add(queryResult as InlineQueryResultVideo);
+                        }
+                        resultsJson = JsonConvert.SerializeObject(videoResults);
+                        break;
+                    default:
+                        throw new Exception("Wrong type of result");
+                }
+                
+                parameters.Add("results", resultsJson);
+            }
+
+            if (cacheTime != null) parameters.Add("cache_time", cacheTime);
+            if (isPersonal) parameters.Add("is_personal", isPersonal);
+            if (nextOffset != null) parameters.Add("next_offset", nextOffset);
+
+            string jsonResponse = Request.Send(ApiUrl + "answerInlineQuery", parameters);
+            Response<bool> response = Deserialize<bool>(jsonResponse);
+            return response == null ? false : response.Ok;
+        }
+
         /// <summary>
         /// Sends text message to chat
         /// </summary>
