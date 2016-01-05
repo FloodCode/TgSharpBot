@@ -10,6 +10,17 @@ namespace TgSharpBot.Types
     public class InlineQueryResultMpeg4Gif : InlineQueryResult
     {
         /// <summary>
+        /// Don't change this option. Type of the result, must be mpeg4_gif
+        /// </summary>
+        [JsonProperty("type")]
+        public override string Type
+        {
+            get
+            {
+                return "mpeg4_gif";
+            }
+        }
+        /// <summary>
         /// A valid URL for the MP4 file. File size must not exceed 1MB
         /// </summary>
         [JsonProperty("mpeg4_url")]

@@ -15,7 +15,7 @@ namespace TgSharpBot
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
         {
             MissingMemberHandling = MissingMemberHandling.Ignore,
-            NullValueHandling = NullValueHandling.Include
+            NullValueHandling = NullValueHandling.Ignore
         };
         private int _lastUpdateId = 0;
         private string ApiUrl;
@@ -309,77 +309,46 @@ namespace TgSharpBot
             return response == null ? false : response.Ok;
         }
 
-        private bool InnerAnswerInlineQuery(string inlineQueryId, List<InlineQueryResult> results, int? cacheTime = null, bool isPersonal = false, string nextOffset = null)
+        /// <summary>
+        /// Use this method to send answers to an inline query
+        /// </summary>
+        /// <param name="inlineQueryId">Unique identifier for the answered query</param>
+        /// <param name="results">A array of results for the inline query</param>
+        /// <param name="cacheTime">
+        /// The maximum amount of time in seconds that the
+        /// result of the inline query may be cached on the server
+        /// Defaults to 300
+        /// </param>
+        /// <param name="isPersonal">
+        /// Pass True, if results may be cached on the
+        /// server side only for the user that sent the query
+        /// By default, results may be returned to any user who sends the same query
+        /// </param>
+        /// <param name="nextOffset">
+        /// Pass the offset that a client should send in the next query with the same text to receive more results
+        /// Pass an empty string if there are no more results or if you don‘t support pagination
+        /// Offset length can’t exceed 64 bytes
+        /// </param>
+        /// <returns>On success, true is returned</returns>
+        public bool AnswerInlineQuery<T>(string inlineQueryId, List<T> results, int cacheTime = 0, bool isPersonal = false, string nextOffset = null)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("inline_query_id", inlineQueryId);
 
-            if (results.Count == 0)
-            {
-                throw new Exception("Must be at least 1 result");
-            }
-            else if (results.Count > 50)
+            if (results.Count > 50)
             {
                 throw new Exception("No more than 50 results per query are allowed");
             }
-            else
-            {
-                string resultsJson = string.Empty;
 
-                switch (results.First().Type)
-                {
-                    case "article":
-                        List<InlineQueryResultArticle> articleResults = new List<InlineQueryResultArticle>();
-                        foreach (InlineQueryResult queryResult in results)
-                        {
-                            articleResults.Add(queryResult as InlineQueryResultArticle);
-                        }
-                        resultsJson = JsonConvert.SerializeObject(articleResults);
-                        break;
-                    case "photo":
-                        List<InlineQueryResultPhoto> photoResults = new List<InlineQueryResultPhoto>();
-                        foreach (InlineQueryResult queryResult in results)
-                        {
-                            photoResults.Add(queryResult as InlineQueryResultPhoto);
-                        }
-                        resultsJson = JsonConvert.SerializeObject(photoResults);
-                        break;
-                    case "gif":
-                        List<InlineQueryResultGif> gifResults = new List<InlineQueryResultGif>();
-                        foreach (InlineQueryResult queryResult in results)
-                        {
-                            gifResults.Add(queryResult as InlineQueryResultGif);
-                        }
-                        resultsJson = JsonConvert.SerializeObject(gifResults);
-                        break;
-                    case "mpeg4_gif":
-                        List<InlineQueryResultMpeg4Gif> mpeg4GifResults = new List<InlineQueryResultMpeg4Gif>();
-                        foreach (InlineQueryResult queryResult in results)
-                        {
-                            mpeg4GifResults.Add(queryResult as InlineQueryResultMpeg4Gif);
-                        }
-                        resultsJson = JsonConvert.SerializeObject(mpeg4GifResults);
-                        break;
-                    case "video":
-                        List<InlineQueryResultVideo> videoResults = new List<InlineQueryResultVideo>();
-                        foreach (InlineQueryResult queryResult in results)
-                        {
-                            videoResults.Add(queryResult as InlineQueryResultVideo);
-                        }
-                        resultsJson = JsonConvert.SerializeObject(videoResults);
-                        break;
-                    default:
-                        throw new Exception("Wrong type of result");
-                }
-                
-                parameters.Add("results", resultsJson);
-            }
+            string resultsJson = JsonConvert.SerializeObject(results, jsonSettings);
+            parameters.Add("results", resultsJson);
+            parameters.Add("cache_time", cacheTime);
 
-            if (cacheTime != null) parameters.Add("cache_time", cacheTime);
             if (isPersonal) parameters.Add("is_personal", isPersonal);
             if (nextOffset != null) parameters.Add("next_offset", nextOffset);
 
             string jsonResponse = Request.Send(ApiUrl + "answerInlineQuery", parameters);
+            Console.WriteLine("Json response: {0}", jsonResponse);
             Response<bool> response = Deserialize<bool>(jsonResponse);
             return response == null ? false : response.Ok;
         }

@@ -53,7 +53,7 @@ namespace TgSharpBot
         public static string Send(string url, Dictionary<string, object> parameters)
         {
             // Create request and receive response
-            string userAgent = "MonsterBot";
+            string userAgent = "TgSharpBot";
             HttpWebResponse webResponse = MultipartFormDataPost(url, userAgent, parameters);
             if (webResponse == null)
             {

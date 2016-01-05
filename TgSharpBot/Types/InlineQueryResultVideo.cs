@@ -8,6 +8,17 @@ namespace TgSharpBot.Types
     public class InlineQueryResultVideo : InlineQueryResult
     {
         /// <summary>
+        /// Don't change this option. Type of the result, must be video
+        /// </summary>
+        [JsonProperty("type")]
+        public override string Type
+        {
+            get
+            {
+                return "video";
+            }
+        }
+        /// <summary>
         /// A valid URL for the embedded video player or video file
         /// </summary>
         [JsonProperty("video_url")]

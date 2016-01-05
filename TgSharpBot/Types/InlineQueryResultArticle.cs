@@ -8,6 +8,17 @@ namespace TgSharpBot.Types
     public class InlineQueryResultArticle : InlineQueryResult
     {
         /// <summary>
+        /// Don't change this option. Type of the result, must be article
+        /// </summary>
+        [JsonProperty("type")]
+        public override string Type
+        {
+            get
+            {
+                return "article";
+            }
+        }
+        /// <summary>
         /// Optional. URL of the result
         /// </summary>
         [JsonProperty("url")]
@@ -16,7 +27,7 @@ namespace TgSharpBot.Types
         /// Optional. Pass true, if you don't want the URL to be shown in the message
         /// </summary>
         [JsonProperty("hide_url")]
-        public bool HideUrl { get; set; }
+        public bool? HideUrl { get; set; } = null;
         /// <summary>
         /// Optional. Short description of the result
         /// </summary>
@@ -31,11 +42,11 @@ namespace TgSharpBot.Types
         /// Optional. Thumbnail width
         /// </summary>
         [JsonProperty("thumb_width")]
-        public int ThumbWidth { get; set; }
+        public int? ThumbWidth { get; set; } = null;
         /// <summary>
         /// Optional. Thumbnail height
         /// </summary>
         [JsonProperty("thumb_height")]
-        public int ThumbHeight { get; set; }
+        public int? ThumbHeight { get; set; } = null;
     }
 }

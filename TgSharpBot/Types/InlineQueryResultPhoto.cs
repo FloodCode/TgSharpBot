@@ -10,6 +10,17 @@ namespace TgSharpBot.Types
     public class InlineQueryResultPhoto : InlineQueryResult
     {
         /// <summary>
+        /// Don't change this option. Type of the result, must be photo
+        /// </summary>
+        [JsonProperty("type")]
+        public override string Type
+        {
+            get
+            {
+                return "photo";
+            }
+        }
+        /// <summary>
         /// A valid URL of the photo. Photo size must not exceed 5MB
         /// </summary>
         [JsonProperty("photo_url")]
